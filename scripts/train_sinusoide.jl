@@ -21,22 +21,229 @@ md"## Setup"
 # ╔═╡ 6e8e2c18-b266-458c-bf15-29651d4f1340
 md"## Create model"
 
+# ╔═╡ 28404128-32ca-4b39-8a44-93080d854ea3
+function why_god(arr::Vector{Matrix{Float32}})
+	return permutedims(cat(
+			arr[1],
+			arr[2],
+			arr[3],
+			arr[4],
+			arr[5],
+			arr[6],
+			arr[7],
+			arr[8],
+			arr[9],
+			arr[10],
+			arr[11],
+			arr[12],
+			arr[13],
+			arr[14],
+			arr[15],
+			arr[16],
+			arr[17],
+			arr[18],
+			arr[19],
+			arr[20],
+			arr[21],
+			arr[22],
+			arr[23],
+			arr[24],
+			arr[25],
+			arr[26],
+			arr[27],
+			arr[28],
+			arr[29],
+			arr[30],
+			arr[31],
+			arr[32],
+			arr[33],
+			arr[34],
+			arr[35],
+			arr[36],
+			arr[37],
+			arr[38],
+			arr[39],
+			arr[40],
+			arr[41],
+			arr[42],
+			arr[43],
+			arr[44],
+			arr[45],
+			arr[46],
+			arr[47],
+			arr[48],
+			arr[49],
+			arr[50],
+			arr[51],
+			arr[52],
+			arr[53],
+			arr[54],
+			arr[55],
+			arr[56],
+			arr[57],
+			arr[58],
+			arr[59],
+			arr[60],
+			arr[61],
+			arr[62],
+			arr[63],
+			arr[64],
+			arr[65],
+			arr[66],
+			arr[67],
+			arr[68],
+			arr[69],
+			arr[70],
+			arr[71],
+			arr[72],
+			arr[73],
+			arr[74],
+			arr[75],
+			arr[76],
+			arr[77],
+			arr[78],
+			arr[79],
+			arr[80],
+			arr[81],
+			arr[82],
+			arr[83],
+			arr[84],
+			arr[85],
+			arr[86],
+			arr[87],
+			arr[88],
+			arr[89],
+			arr[90],
+			arr[91],
+			arr[92],
+			arr[93],
+			arr[94],
+			arr[95],
+			arr[96],
+			arr[97],
+			arr[98],
+			arr[99],
+			arr[100],
+			arr[101],
+			arr[102],
+			arr[103],
+			arr[104],
+			arr[105],
+			arr[106],
+			arr[107],
+			arr[108],
+			arr[109],
+			arr[110],
+			arr[111],
+			arr[112],
+			arr[113],
+			arr[114],
+			arr[115],
+			arr[116],
+			arr[117],
+			arr[118],
+			arr[119],
+			arr[120],
+			arr[121],
+			arr[122],
+			arr[123],
+			arr[124],
+			arr[125],
+			arr[126],
+			arr[127],
+			arr[128],
+			arr[129],
+			arr[130],
+			arr[131],
+			arr[132],
+			arr[133],
+			arr[134],
+			arr[135],
+			arr[136],
+			arr[137],
+			arr[138],
+			arr[139],
+			arr[140],
+			arr[141],
+			arr[142],
+			arr[143],
+			arr[144],
+			arr[145],
+			arr[146],
+			arr[147],
+			arr[148],
+			arr[149],
+			arr[150],
+			arr[151],
+			arr[152],
+			arr[153],
+			arr[154],
+			arr[155],
+			arr[156],
+			arr[157],
+			arr[158],
+			arr[159],
+			arr[160],
+			arr[161],
+			arr[162],
+			arr[163],
+			arr[164],
+			arr[165],
+			arr[166],
+			arr[167],
+			arr[168],
+			arr[169],
+			arr[170],
+			arr[171],
+			arr[172],
+			arr[173],
+			arr[174],
+			arr[175],
+			arr[176],
+			arr[177],
+			arr[178],
+			arr[179],
+			arr[180],
+			arr[181],
+			arr[182],
+			arr[183],
+			arr[184],
+			arr[185],
+			arr[186],
+			arr[187],
+			arr[188],
+			arr[189],
+			arr[190],
+			arr[191],
+			arr[192],
+			arr[193],
+			arr[194],
+			arr[195],
+			arr[196],
+			arr[197],
+			arr[198],
+			arr[199],
+			arr[200],
+			arr[201],
+		dims=3), (1, 3, 2))
+end
+
 # ╔═╡ 38350d77-b354-430d-9b3c-40ba549b0a47
 function create_model(rng::AbstractRNG, )
-	recurrent_init(rng, dims...) = Lux.glorot_normal(rng, dims...; gain=1.0)
-	output_init(rng, dims...) = Lux.glorot_normal(rng, dims...; gain=1.0)
+	recurrent_init(rng, dims...) = Lux.glorot_normal(rng, dims...; gain=0.75)
+	output_init(rng, dims...) = Lux.glorot_normal(rng, dims...; gain=0.75)
 	
     model = Chain(
 		Recurrence(
 			RNNCell(
 				1 => 5, identity; 
-				bias=false,
-				train_state=false,
+				use_bias=false,
+				train_state=true,
 				init_weight=recurrent_init
 			); 
 			return_sequence = true
 		),
-		x -> permutedims(cat(x..., dims=3), (1, 3, 2)),
+		why_god,
 		Dense(5, 1; init_weight=output_init, use_bias=false)
 	)
 	
@@ -54,10 +261,10 @@ begin
 	rng = Random.default_rng()
     Random.seed!(rng, 0)
 	
-	freq_1 = 0.6
-	t_start = 0.0
-	t_stop = 10.0
-	dt = 0.05
+	freq_1 = 0.6f0
+	t_start = 0.0f0
+	t_stop = 10.0f0
+	dt = 0.05f0
 	time = t_start:dt:t_stop
 	input = fill(freq_1, length(time))
 	# The line below is IMPORTANT
@@ -84,10 +291,10 @@ end
 md"## Visualize training data"
 
 # ╔═╡ 94e249ec-c1b2-414f-bdd4-c57188476676
-function generate_sinusoid(freq::Float64, t_start::Float64, t_stop::Float64, dt::Float64)
+function generate_sinusoid(freq::Float32, t_start::Float32, t_stop::Float32, dt::Float32)
     t = t_start:dt:t_stop
     y = sin.(2π*freq*t)
-    return y
+    return Float32.(y)
 end
 
 # ╔═╡ d0a0de5b-3968-4d94-bc34-5759da7b867f
@@ -125,7 +332,7 @@ function train(rng::AbstractRNG, epochs::Int64, model, ps, st, data, lr::Float32
     ### Warmup the Model
     (l, _), back = pullback(p -> loss(x, y, model, p, st), ps)
     back((one(l), nothing))
-	println(l)
+	loss_results[1] = l
 
     ### Lets train the model
     for epoch in 1:epochs
@@ -133,14 +340,24 @@ function train(rng::AbstractRNG, epochs::Int64, model, ps, st, data, lr::Float32
 		### We need to add `nothing`s equal to the number of returned values - 1
 		gs = back((one(l), nothing))[1]
 		st_opt, ps = Optimisers.update(st_opt, ps, gs)
-
+		loss_results[epoch+1] = l
     end
 	return ps, loss_results
 end
 
 # ╔═╡ fa915f64-f4f2-44c0-9a12-4029dc157e74
+ps_new, loss_results = train(rng, 2500, model, ps, st, (x, sine_wave), 0.001f0)
+
+# ╔═╡ 86e196ed-04d8-4fee-97cd-435290249d93
 begin
-	ps_new, loss_results = train(rng, 10, model, ps, st, (x, sine_wave), 0.001f0)
+	df3 = (; 
+	time, 
+	sinusoids=model(x, ps_new, st)[1][1,:,1], 
+	frequency=fill(string(freq_1)*" trained", length(time))
+	)
+	
+	layers_3 = data(df3) * visual(Lines)
+	fg_3 = draw(layers_3 * mapping(:time, :sinusoids, color = :frequency))
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -173,7 +390,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.4"
 manifest_format = "2.0"
-project_hash = "4908f9a67d63585b2f56a6581a6a77be73ec7ec4"
+project_hash = "0d694988ceebd0bb3f414f83c24e82363c7f6273"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -1813,6 +2030,7 @@ version = "3.5.0+0"
 # ╟─2f4e957b-e2d9-4681-b77b-3dd8e2ed46ad
 # ╠═d80c3da6-f1b1-42ca-99bd-4c63e2915e42
 # ╟─6e8e2c18-b266-458c-bf15-29651d4f1340
+# ╟─28404128-32ca-4b39-8a44-93080d854ea3
 # ╠═38350d77-b354-430d-9b3c-40ba549b0a47
 # ╟─283cf744-77ae-49da-8ee1-12fae3c18ab8
 # ╠═be1b09e4-4b8c-4bd8-a235-67155158d707
@@ -1825,5 +2043,6 @@ version = "3.5.0+0"
 # ╠═98beb74b-740f-4e0b-9e13-d7c62fb5af18
 # ╠═ca4509f6-9252-40f7-812e-bac12fbd5b3d
 # ╠═fa915f64-f4f2-44c0-9a12-4029dc157e74
+# ╟─86e196ed-04d8-4fee-97cd-435290249d93
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
