@@ -122,7 +122,7 @@ function create_training_model(
 			RNNCell(
 				1 => hidden_neurons, tanh; 
 				use_bias=false,
-				train_state=true,
+				train_state=false,
 				init_weight=recurrent_init
 			); 
 			return_sequence = true
@@ -136,7 +136,7 @@ function create_training_model(
                 RNNCell(
                     1 => hidden_neurons, identity; 
                     use_bias=false,
-                    train_state=true,
+                    train_state=false,
                     init_weight=recurrent_init
                 ); 
                 return_sequence = true
@@ -164,7 +164,7 @@ function create_testing_model(
 			RNNCell(
 				1 => hidden_neurons, tanh; 
 				use_bias=false,
-				train_state=true,
+				train_state=false,
 			); 
 			return_sequence = true
 		),
@@ -177,7 +177,7 @@ function create_testing_model(
                 RNNCell(
                     1 => hidden_neurons, identity; 
                     use_bias=false,
-                    train_state=true,
+                    train_state=false,
                 ); 
                 return_sequence = true
             ),

@@ -18,63 +18,21 @@ The purpose of this notebook is to create a scheduler for the SinusoidalNetwork 
 # ╔═╡ 6b59673b-60bb-450c-9841-2b68b89b4b89
 md"## Setup"
 
+# ╔═╡ 16e620ce-c2dc-47c6-a82e-7e1418b82728
+md"## Create main scheduler"
+
 # ╔═╡ c8804280-081c-445c-a1fd-24cd4752389b
-md"## Create DataFrame"
+md"### Create DataFrame"
 
 # ╔═╡ 4429bf83-f29c-4c77-89b4-981650f9933a
 begin
 	run1 = [
 		0,
-		25,
+		5000,
 		0.001f0,
 		5,
-		0.75f0,
-		0.75f0,
-		"identity",
-		[0.4f0,0.5f0,0.6f0],
-		5.0f0,
-		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,0.7f0,0.8f0],
-		10.0f0,
-		0.0f0,
-		0.05f0
-	]
-	run2 = [
-		0,
-		3000,
-		0.0001f0,
-		5,
-		0.50f0,
-		0.50f0,
-		"identity",
-		[0.4f0,0.5f0,0.6f0],
-		5.0f0,
-		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,0.7f0,0.8f0],
-		10.0f0,
-		0.0f0,
-		0.05f0
-	]
-	run3 = [
-		0,
-		3000,
-		0.0001f0,
-		5,
-		0.50f0,
-		0.50f0,
-		"identity",
-		[0.5f0,0.6f0],
-		5.0f0,
-		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,0.7f0,0.8f0],
-		10.0f0,
-		0.0f0,
-		0.05f0
-	]
-	run4 = [
-		0,
-		3000,
-		0.001f0,
-		5,
-		0.50f0,
-		0.50f0,
+		0.80f0,
+		0.80f0,
 		"identity",
 		[0.6f0],
 		5.0f0,
@@ -83,97 +41,7 @@ begin
 		0.0f0,
 		0.05f0
 	]
-	run5 = [
-		0,
-		2000,
-		0.001f0,
-		5,
-		0.50f0,
-		0.50f0,
-		"identity",
-		[0.5f0],
-		5.0f0,
-		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,0.7f0,0.8f0],
-		10.0f0,
-		0.0f0,
-		0.05f0
-	]
-	run6 = [
-		0,
-		2000,
-		0.001f0,
-		5,
-		0.50f0,
-		0.50f0,
-		"tanh",
-		[0.5f0],
-		5.0f0,
-		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,0.7f0,0.8f0],
-		10.0f0,
-		0.0f0,
-		0.05f0
-	]
-	run7 = [
-		0,
-		2000,
-		0.001f0,
-		5,
-		0.50f0,
-		0.50f0,
-		"tanh",
-		[0.4f0,0.5f0,0.6f0],
-		5.0f0,
-		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,0.7f0,0.8f0],
-		10.0f0,
-		0.0f0,
-		0.05f0
-	]
-	run8 = [
-		0,
-		2000,
-		0.001f0,
-		5,
-		0.50f0,
-		0.50f0,
-		"tanh",
-		[0.4f0,0.5f0,0.6f0],
-		5.0f0,
-		[0.4f0,0.5f0,0.6f0],
-		10.0f0,
-		0.0f0,
-		0.05f0
-	]
-	run9 = [
-		0,
-		2000,
-		0.001f0,
-		5,
-		0.80f0,
-		0.80f0,
-		"identity",
-		[0.4f0,0.5f0,0.6f0],
-		5.0f0,
-		[0.4f0,0.5f0,0.6f0],
-		10.0f0,
-		0.0f0,
-		0.05f0
-	]
-	run10 = [
-		0,
-		5000,
-		0.001f0,
-		5,
-		0.80f0,
-		0.80f0,
-		"identity",
-		[0.4f0,0.5f0,0.6f0],
-		5.0f0,
-		[0.4f0,0.5f0,0.6f0],
-		10.0f0,
-		0.0f0,
-		0.05f0
-	]
-	rows = [run1, run2, run3, run4, run5, run6, run7, run8, run9, run10]
+	rows = [run1, ]
 end
 
 # ╔═╡ 918b5d12-14dd-4852-a4e2-f92569bc03fe
@@ -218,10 +86,71 @@ end
 df = createDataFrame(rows, column_names)
 
 # ╔═╡ 8f2a66fd-73cd-47fe-930d-cf8b9ac6343f
-md"## Save DataFrame"
+md"### Save DataFrame"
 
 # ╔═╡ 8963cb44-37ae-4371-af35-1240d8403eb3
 save("../data/setup_data.jld2", "df", df)
+
+# ╔═╡ 37c65521-6a14-4484-a5ee-a6bbee429497
+md"## Create rescheduler"
+
+# ╔═╡ bbcbd603-c89a-413a-98c3-2a2b34bc355e
+begin
+	rerun1 = [
+		0,
+		5000,
+		0.001f0,
+		5,
+		"identity",
+		[0.5f0,0.6f0],
+		5.0f0,
+		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,0.7f0,0.8f0],
+		10.0f0,
+		0.0f0,
+		0.05f0,
+		"./data/models/model_1.jls"
+	]
+	rerun2 = [
+		0,
+		5000,
+		0.0001f0,
+		5,
+		"identity",
+		[0.4f0,0.5f0,0.6f0],
+		5.0f0,
+		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,0.7f0,0.8f0],
+		10.0f0,
+		0.0f0,
+		0.05f0,
+		"./data/models/remodel_1.jls"
+	]
+	rerows = [rerun1, rerun2, ]
+end
+
+# ╔═╡ f341199f-b90d-4b17-b3fa-8f04b236c27a
+recolumn_names = [
+	"seed",
+	"epochs", 
+	"lr", 
+	"neurons", 
+	"activation",
+	"train_freq", 
+	"train_t_stop", 
+	"test_freq", 
+	"test_t_stop", 
+	"t_start",
+	"dt", 
+	"ps_loc",
+]
+
+# ╔═╡ e9b5086b-70c0-427d-89af-54d4f60821a1
+redf = createDataFrame(rerows, recolumn_names)
+
+# ╔═╡ 130bd0c7-c7ca-4d10-9f15-c57fe42dde07
+md"### Save reDataFrame"
+
+# ╔═╡ 9473a684-281e-4e0b-b838-00c7f8de2527
+save("../data/resetup_data.jld2", "redf", redf)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -578,6 +507,7 @@ version = "17.4.0+0"
 # ╟─0fcc5783-1bad-45e1-8700-99285fdea95e
 # ╟─6b59673b-60bb-450c-9841-2b68b89b4b89
 # ╠═2cec004b-05dc-4cc9-a448-72a4863c3e22
+# ╟─16e620ce-c2dc-47c6-a82e-7e1418b82728
 # ╟─c8804280-081c-445c-a1fd-24cd4752389b
 # ╠═4429bf83-f29c-4c77-89b4-981650f9933a
 # ╠═918b5d12-14dd-4852-a4e2-f92569bc03fe
@@ -586,5 +516,11 @@ version = "17.4.0+0"
 # ╠═f52f2f87-0a78-43c6-a4d4-5fe73d9899c5
 # ╟─8f2a66fd-73cd-47fe-930d-cf8b9ac6343f
 # ╠═8963cb44-37ae-4371-af35-1240d8403eb3
+# ╟─37c65521-6a14-4484-a5ee-a6bbee429497
+# ╠═bbcbd603-c89a-413a-98c3-2a2b34bc355e
+# ╠═f341199f-b90d-4b17-b3fa-8f04b236c27a
+# ╠═e9b5086b-70c0-427d-89af-54d4f60821a1
+# ╟─130bd0c7-c7ca-4d10-9f15-c57fe42dde07
+# ╠═9473a684-281e-4e0b-b838-00c7f8de2527
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

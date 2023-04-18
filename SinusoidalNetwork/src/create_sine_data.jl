@@ -21,3 +21,11 @@ function create_data(
     end
     return inputs, outputs
 end
+
+function loadModel(output_file::String)
+	open(output_file, "r") do f
+		ps = deserialize(f)
+		accuracies = deserialize(f)
+		return ps, accuracies
+	end
+end
