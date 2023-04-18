@@ -24,17 +24,17 @@ function printUpdates(epoch, epochs, ttime, current_results)
     println("[$epoch/$epochs] \t Time $(round(ttime; digits=2))s \t Train Loss: " * "$(round(current_results[1]; digits=4)) \t " * "Test Loss: $(round(current_results[2]; digits=4))")
 end
 
-function train(rng::AbstractRNG, epochs::Int64, lr::Float32, model, ps, st, training_data, testing_data, )	
+function train(rng::AbstractRNG, epochs::Int64, lr::Float32, model_train, model_test, ps, st, training_data, testing_data, )	
     opt = Optimisers.Adam(lr, )
     st_opt = Optimisers.setup(opt, ps)
     losses = Lux.zeros32(rng, 2, epochs+1)
 
     ### Warmup the Model
     stime = time()
-    loss(training_data[1], training_data[2], model, ps, st)
-    (l, _), back = pullback(p -> loss(training_data[1], training_data[2], model, p, st), ps)
+    loss(training_data[1], training_data[2], model_train, ps, st)
+    (l, _), back = pullback(p -> loss(training_data[1], training_data[2], model_train, p, st), ps)
     back((one(l), nothing))
-    current_results = constructResults(model, ps, st, training_data, testing_data, )
+    current_results = constructResults(model_test, ps, st, training_data, testing_data, )
     ttime = time() - stime
     losses[:, 1] = current_results
     printUpdates(0, epochs, ttime, current_results)
@@ -43,10 +43,10 @@ function train(rng::AbstractRNG, epochs::Int64, lr::Float32, model, ps, st, trai
     for epoch in 1:epochs
         stime = time()
 
-        (l, st), back = pullback(p -> loss(training_data[1], training_data[2], model, p, st), ps)
+        (l, st), back = pullback(p -> loss(training_data[1], training_data[2], model_train, p, st), ps)
 		gs = back((one(l), nothing))[1]
 		st_opt, ps = Optimisers.update(st_opt, ps, gs)
-        current_results = constructResults(model, ps, st, training_data, testing_data, )
+        current_results = constructResults(model_test, ps, st, training_data, testing_data, )
 
         ttime = time() - stime
         losses[:, epoch+1] = current_results

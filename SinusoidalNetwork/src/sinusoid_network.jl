@@ -211,15 +211,16 @@ function create_training_model(
     recurrent_gain::Float32, 
     output_gain::Float32, 
     hidden_neurons::Int64,
-    activation
+    activation::String
     )
 	recurrent_init(rng, dims...) = Lux.glorot_normal(rng, dims...; gain=recurrent_gain)
 	output_init(rng, dims...) = Lux.glorot_normal(rng, dims...; gain=output_gain)
 	
+    if activation == "tanh"
     model = Chain(
 		Recurrence(
 			RNNCell(
-				1 => hidden_neurons, activation; 
+				1 => hidden_neurons, tanh; 
 				use_bias=false,
 				train_state=true,
 				init_weight=recurrent_init
@@ -229,6 +230,21 @@ function create_training_model(
 		why_god,
 		Dense(hidden_neurons, 1; init_weight=output_init, use_bias=false)
 	)
+    else
+        model = Chain(
+            Recurrence(
+                RNNCell(
+                    1 => hidden_neurons, identity; 
+                    use_bias=false,
+                    train_state=true,
+                    init_weight=recurrent_init
+                ); 
+                return_sequence = true
+            ),
+            why_god,
+            Dense(hidden_neurons, 1; init_weight=output_init, use_bias=false)
+        )
+    end
 	
     ps, st = Lux.setup(rng, model)
 	ps = ComponentArray(ps)
@@ -239,13 +255,14 @@ end
 function create_testing_model(
     rng::AbstractRNG, 
     hidden_neurons::Int64,
-    activation
+    activation::String
     )
 
+    if activation == "tanh"
     model = Chain(
 		Recurrence(
 			RNNCell(
-				1 => hidden_neurons, activation; 
+				1 => hidden_neurons, tanh; 
 				use_bias=false,
 				train_state=true,
 			); 
@@ -254,9 +271,20 @@ function create_testing_model(
 		x -> permutedims(cat(x..., dims=3), (1, 3, 2)),
 		Dense(hidden_neurons, 1; use_bias=false)
 	)
-	
-    ps, st = Lux.setup(rng, model)
-	ps = ComponentArray(ps)
+    else
+        model = Chain(
+            Recurrence(
+                RNNCell(
+                    1 => hidden_neurons, identity; 
+                    use_bias=false,
+                    train_state=true,
+                ); 
+                return_sequence = true
+            ),
+            x -> permutedims(cat(x..., dims=3), (1, 3, 2)),
+            Dense(hidden_neurons, 1; use_bias=false)
+        )
+    end
 
-    return model, ps, st
+    return model
 end
