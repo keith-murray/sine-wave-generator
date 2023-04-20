@@ -4,361 +4,121 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ d80c3da6-f1b1-42ca-99bd-4c63e2915e42
-using Lux, Zygote, Optimisers, LinearAlgebra, Random, Statistics, AlgebraOfGraphics, CairoMakie, ComponentArrays, NNlib
+# ╔═╡ e100cb5e-a7fa-4874-8448-2d5a7ee89dfb
+using Random, DataFrames, JLD2, Serialization, ComponentArrays, LinearAlgebra, Lux, Optimisers, Statistics, NNlib, Zygote, AlgebraOfGraphics, CairoMakie
 
-# ╔═╡ bc2ef388-dbc3-11ed-01de-7338ef66e404
-md"# Train Sinusoid RNN"
+# ╔═╡ a0389136-7395-4a4a-96de-85f15aaa756e
+begin
+	include("../SinusoidalNetwork/src/create_sine_data.jl")
+	include("../SinusoidalNetwork/src/sinusoid_network.jl")
+	include("../SinusoidalNetwork/src/training_funcs.jl")
+end
 
-# ╔═╡ df637a8a-51fa-476b-9197-2cacf460f275
+# ╔═╡ 65062f72-de4d-11ed-2b69-d3a0377c9145
+md"# Examine saved models"
+
+# ╔═╡ e01415e6-0a4d-460e-b885-31f776b09754
 md"""
-The purpose of this notebook is to train a 5 neuron RNN to generate a sine wave.
+The purpose of this notebook is to examine the learned solutions and representations of saved models.
 """
 
-# ╔═╡ 2f4e957b-e2d9-4681-b77b-3dd8e2ed46ad
+# ╔═╡ f4659fd9-96dc-4b64-8449-495feb896777
 md"## Setup"
 
-# ╔═╡ 6e8e2c18-b266-458c-bf15-29651d4f1340
-md"## Create model"
-
-# ╔═╡ 28404128-32ca-4b39-8a44-93080d854ea3
-function why_god(arr::Vector{Matrix{Float32}})
-	return permutedims(cat(
-			arr[1],
-			arr[2],
-			arr[3],
-			arr[4],
-			arr[5],
-			arr[6],
-			arr[7],
-			arr[8],
-			arr[9],
-			arr[10],
-			arr[11],
-			arr[12],
-			arr[13],
-			arr[14],
-			arr[15],
-			arr[16],
-			arr[17],
-			arr[18],
-			arr[19],
-			arr[20],
-			arr[21],
-			arr[22],
-			arr[23],
-			arr[24],
-			arr[25],
-			arr[26],
-			arr[27],
-			arr[28],
-			arr[29],
-			arr[30],
-			arr[31],
-			arr[32],
-			arr[33],
-			arr[34],
-			arr[35],
-			arr[36],
-			arr[37],
-			arr[38],
-			arr[39],
-			arr[40],
-			arr[41],
-			arr[42],
-			arr[43],
-			arr[44],
-			arr[45],
-			arr[46],
-			arr[47],
-			arr[48],
-			arr[49],
-			arr[50],
-			arr[51],
-			arr[52],
-			arr[53],
-			arr[54],
-			arr[55],
-			arr[56],
-			arr[57],
-			arr[58],
-			arr[59],
-			arr[60],
-			arr[61],
-			arr[62],
-			arr[63],
-			arr[64],
-			arr[65],
-			arr[66],
-			arr[67],
-			arr[68],
-			arr[69],
-			arr[70],
-			arr[71],
-			arr[72],
-			arr[73],
-			arr[74],
-			arr[75],
-			arr[76],
-			arr[77],
-			arr[78],
-			arr[79],
-			arr[80],
-			arr[81],
-			arr[82],
-			arr[83],
-			arr[84],
-			arr[85],
-			arr[86],
-			arr[87],
-			arr[88],
-			arr[89],
-			arr[90],
-			arr[91],
-			arr[92],
-			arr[93],
-			arr[94],
-			arr[95],
-			arr[96],
-			arr[97],
-			arr[98],
-			arr[99],
-			arr[100],
-			arr[101],
-			arr[102],
-			arr[103],
-			arr[104],
-			arr[105],
-			arr[106],
-			arr[107],
-			arr[108],
-			arr[109],
-			arr[110],
-			arr[111],
-			arr[112],
-			arr[113],
-			arr[114],
-			arr[115],
-			arr[116],
-			arr[117],
-			arr[118],
-			arr[119],
-			arr[120],
-			arr[121],
-			arr[122],
-			arr[123],
-			arr[124],
-			arr[125],
-			arr[126],
-			arr[127],
-			arr[128],
-			arr[129],
-			arr[130],
-			arr[131],
-			arr[132],
-			arr[133],
-			arr[134],
-			arr[135],
-			arr[136],
-			arr[137],
-			arr[138],
-			arr[139],
-			arr[140],
-			arr[141],
-			arr[142],
-			arr[143],
-			arr[144],
-			arr[145],
-			arr[146],
-			arr[147],
-			arr[148],
-			arr[149],
-			arr[150],
-			arr[151],
-			arr[152],
-			arr[153],
-			arr[154],
-			arr[155],
-			arr[156],
-			arr[157],
-			arr[158],
-			arr[159],
-			arr[160],
-			arr[161],
-			arr[162],
-			arr[163],
-			arr[164],
-			arr[165],
-			arr[166],
-			arr[167],
-			arr[168],
-			arr[169],
-			arr[170],
-			arr[171],
-			arr[172],
-			arr[173],
-			arr[174],
-			arr[175],
-			arr[176],
-			arr[177],
-			arr[178],
-			arr[179],
-			arr[180],
-			arr[181],
-			arr[182],
-			arr[183],
-			arr[184],
-			arr[185],
-			arr[186],
-			arr[187],
-			arr[188],
-			arr[189],
-			arr[190],
-			arr[191],
-			arr[192],
-			arr[193],
-			arr[194],
-			arr[195],
-			arr[196],
-			arr[197],
-			arr[198],
-			arr[199],
-			arr[200],
-			arr[201],
-		dims=3), (1, 3, 2))
-end
-
-# ╔═╡ 38350d77-b354-430d-9b3c-40ba549b0a47
-function create_model(rng::AbstractRNG, )
-	recurrent_init(rng, dims...) = Lux.glorot_normal(rng, dims...; gain=0.75)
-	output_init(rng, dims...) = Lux.glorot_normal(rng, dims...; gain=0.75)
-	
-    model = Chain(
-		Recurrence(
-			RNNCell(
-				1 => 5, identity; 
-				use_bias=false,
-				train_state=true,
-				init_weight=recurrent_init
-			); 
-			return_sequence = true
-		),
-		why_god,
-		Dense(5, 1; init_weight=output_init, use_bias=false)
-	)
-	
-    ps, st = Lux.setup(rng, model)
-	ps = ComponentArray(ps)
-
-    return model, ps, st
-end
-
-# ╔═╡ 283cf744-77ae-49da-8ee1-12fae3c18ab8
-md"Test output with initial weights"
-
-# ╔═╡ be1b09e4-4b8c-4bd8-a235-67155158d707
+# ╔═╡ 17323c55-c1db-4c03-99a6-f56662551131
 begin
 	rng = Random.default_rng()
-    Random.seed!(rng, 0)
-	
-	freq_1 = 0.6f0
-	t_start = 0.0f0
-	t_stop = 10.0f0
-	dt = 0.05f0
-	time = t_start:dt:t_stop
-	input = fill(freq_1, length(time))
-	# The line below is IMPORTANT
-	x = reshape(input, 1, :, 1)
-	# The dimensions are INPUT_size, TIME_length, BATCH_size
-	
-	model, ps, st = create_model(rng, )
-	y, st_new = model(x, ps, st)
+	Random.seed!(rng, 0)
 end
 
-# ╔═╡ 4295f6c3-b904-428f-bbac-d55a985e9342
+# ╔═╡ 597c7dcf-6006-49a3-ac12-8dc6c020dc7a
+md"## Load model"
+
+# ╔═╡ dfb495b4-a201-4424-b0b3-0195bb32ed41
+ps, losses = loadModel("../data/models/remodel_2.jls")
+
+# ╔═╡ 3dee0c6b-f81d-475e-9979-74861823b25a
+ps.layer_1.weight_ih
+
+# ╔═╡ 2610ea73-946b-4621-8ead-6af64af2324c
+ps.layer_1.weight_hh
+
+# ╔═╡ ef265260-b82c-4a6d-b36f-4db11563f124
+ps.layer_3.weight
+
+# ╔═╡ f3b75b68-a295-440a-8db5-d3c6309eb601
 begin
-	df1 = (; 
-	time, 
-	sinusoids=y[1,:,1], 
-	frequency=fill(string(freq_1)*" observed", length(time))
+    model_test = create_testing_model(rng, 5, "identity", )
+	_, st = Lux.setup(rng, model_test)
+end
+
+# ╔═╡ 8c0c5dbd-2fe4-487f-b0b9-2500d7a1d2b7
+md"## Create data"
+
+# ╔═╡ abea167d-2b9a-4008-a06c-9cd3aed7a529
+begin
+	t_start = 0.00f0
+	dt = 0.10f0
+	t_end = 20.00f0
+	time = t_start:dt:t_end
+end
+
+# ╔═╡ d1cd39bb-c6a4-43fe-962f-ec395c7eb556
+begin
+    test_input, test_output = create_data(
+		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,], 
+		t_start, 
+		t_end, 
+		dt,
+	)
+    test_data = (test_input, test_output, )
+end
+
+# ╔═╡ fbeffd13-ce82-4001-bf10-e4f327de9a42
+md"## Create results"
+
+# ╔═╡ 615d1627-fd53-462a-841b-ff4f392f605c
+y_pred, _ = model_test(test_input, ps, st)
+
+# ╔═╡ 74e11d3b-89ec-44b1-aa87-08292fbec7ba
+md"## Plot results"
+
+# ╔═╡ 3bc4900c-0398-472b-9ed9-54d079af8445
+function make_graph(freq, index)
+	dfpredicted1 = (; 
+		time, 
+		sinusoids=test_output[1,:,index], 
+		frequency=fill(string(freq)*" expected", length(time))
 	)
 	
-	layers_1 = data(df1) * visual(Lines)
-	fg_1 = draw(layers_1 * mapping(:time, :sinusoids, color = :frequency))
-end
-
-# ╔═╡ 1cfe9691-8e8c-4202-95fd-b10de3c234f5
-md"## Visualize training data"
-
-# ╔═╡ 94e249ec-c1b2-414f-bdd4-c57188476676
-function generate_sinusoid(freq::Float32, t_start::Float32, t_stop::Float32, dt::Float32)
-    t = t_start:dt:t_stop
-    y = sin.(2π*freq*t)
-    return Float32.(y)
-end
-
-# ╔═╡ d0a0de5b-3968-4d94-bc34-5759da7b867f
-sine_wave = generate_sinusoid(freq_1, t_start, t_stop, dt)
-
-# ╔═╡ 33d8fc07-77a6-40ba-80d2-2183730cfe78
-begin
-	df2 = (; 
-	time, 
-	sinusoids=sine_wave, 
-	frequency=fill(string(freq_1)*" expected", length(time))
+	dfobserved1 = (; 
+		time, 
+		sinusoids=y_pred[1,:,index], 
+		frequency=fill(string(freq)*" observed", length(time))
 	)
 	
-	layers_2 = data(df1) * visual(Lines) + data(df2) * visual(Lines)
-	fg_2 = draw(layers_2 * mapping(:time, :sinusoids, color = :frequency))
-end
-
-# ╔═╡ 3f629129-700d-44eb-912d-99bd0c1b2423
-md"## Train model"
-
-# ╔═╡ 98beb74b-740f-4e0b-9e13-d7c62fb5af18
-function loss(x, y, model, ps, st)
-	y_pred, st = model(x, ps, st)
-	l = mean(abs2, y_pred[1,:,1] .- y)
-	return l, st
-end
-
-# ╔═╡ ca4509f6-9252-40f7-812e-bac12fbd5b3d
-function train(rng::AbstractRNG, epochs::Int64, model, ps, st, data, lr::Float32)	
-    opt = Optimisers.Adam(lr, )
-    st_opt = Optimisers.setup(opt, ps)
-	x, y = data
-	loss_results = zeros(epochs + 1)
+	layers_1 = data(dfpredicted1) * visual(Lines) + data(dfobserved1) * visual(Lines)
 	
-    ### Warmup the Model
-    (l, _), back = pullback(p -> loss(x, y, model, p, st), ps)
-    back((one(l), nothing))
-	loss_results[1] = l
-
-    ### Lets train the model
-    for epoch in 1:epochs
-		(l, st), back = pullback(p -> loss(x, y, model, p, st), ps)
-		### We need to add `nothing`s equal to the number of returned values - 1
-		gs = back((one(l), nothing))[1]
-		st_opt, ps = Optimisers.update(st_opt, ps, gs)
-		loss_results[epoch+1] = l
-    end
-	return ps, loss_results
+	return draw(layers_1 * mapping(:time, :sinusoids, color = :frequency))
 end
 
-# ╔═╡ fa915f64-f4f2-44c0-9a12-4029dc157e74
-ps_new, loss_results = train(rng, 2500, model, ps, st, (x, sine_wave), 0.001f0)
+# ╔═╡ d84d47e5-a9df-4430-871a-e937b85790b7
+make_graph(0.1f0, 1)
 
-# ╔═╡ 86e196ed-04d8-4fee-97cd-435290249d93
-begin
-	df3 = (; 
-	time, 
-	sinusoids=model(x, ps_new, st)[1][1,:,1], 
-	frequency=fill(string(freq_1)*" trained", length(time))
-	)
-	
-	layers_3 = data(df3) * visual(Lines)
-	fg_3 = draw(layers_3 * mapping(:time, :sinusoids, color = :frequency))
-end
+# ╔═╡ 40017385-caec-4f02-adb8-1a7d144d3805
+make_graph(0.2f0, 2)
+
+# ╔═╡ 89207086-22f9-4dfa-bdf7-f125ce580819
+make_graph(0.3f0, 3)
+
+# ╔═╡ 0075e9c0-0337-45f2-b80d-72c8b5cd0932
+make_graph(0.4f0, 4)
+
+# ╔═╡ 1e187d18-9bf9-4447-b66e-0a121c992014
+make_graph(0.5f0, 5)
+
+# ╔═╡ 31db4afe-9e48-49d0-9980-228967e155e3
+make_graph(0.6f0, 6)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -366,11 +126,14 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 ComponentArrays = "b0b7db55-cfe3-40fc-9ded-d10e2dbeff66"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Lux = "b2108857-7c20-44ae-9111-449ecde12c47"
 NNlib = "872c559c-99b0-510c-b3b7-b6c96a88d5cd"
 Optimisers = "3bd65402-5787-11e9-1adc-39752487f4e2"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
@@ -378,8 +141,10 @@ Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 AlgebraOfGraphics = "~0.6.14"
 CairoMakie = "~0.10.4"
 ComponentArrays = "~0.13.9"
+DataFrames = "~1.5.0"
+JLD2 = "~0.4.31"
 Lux = "~0.4.50"
-NNlib = "~0.8.19"
+NNlib = "~0.8.20"
 Optimisers = "~0.2.18"
 Zygote = "~0.6.60"
 """
@@ -390,7 +155,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.4"
 manifest_format = "2.0"
-project_hash = "0d694988ceebd0bb3f414f83c24e82363c7f6273"
+project_hash = "1c057f9661140ac91cd6c67f0d492c7e58f850aa"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -495,15 +260,15 @@ version = "0.5.0+1"
 
 [[deps.CUDA_Runtime_Discovery]]
 deps = ["Libdl"]
-git-tree-sha1 = "fd31d0f67319beda2dba0d1550f04156237e7216"
+git-tree-sha1 = "bcc4a23cbbd99c8535a5318455dcf0f2546ec536"
 uuid = "1af6417a-86b4-443c-805f-a4643ffb695f"
-version = "0.2.1"
+version = "0.2.2"
 
 [[deps.CUDA_Runtime_jll]]
 deps = ["Artifacts", "CUDA_Driver_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
-git-tree-sha1 = "9ac3ffda60eeae5291be20f35ca264eb8e95bbc6"
+git-tree-sha1 = "81eed046f28a0cdd0dc1f61d00a49061b7cc9433"
 uuid = "76a88914-d11a-5bdc-97e0-2f5a05c973a2"
-version = "0.5.0+1"
+version = "0.5.0+2"
 
 [[deps.CUDNN_jll]]
 deps = ["Artifacts", "CUDA_Runtime_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
@@ -622,10 +387,21 @@ git-tree-sha1 = "d05d9e7b7aedff4e5b51a029dced05cfb6125781"
 uuid = "d38c429a-6771-53c6-b99e-75d170b6e991"
 version = "0.6.2"
 
+[[deps.Crayons]]
+git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
+uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
+version = "4.1.1"
+
 [[deps.DataAPI]]
 git-tree-sha1 = "e8119c1a33d267e16108be441a287a6981ba1630"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.14.0"
+
+[[deps.DataFrames]]
+deps = ["Compat", "DataAPI", "Future", "InlineStrings", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Random", "Reexport", "SentinelArrays", "SnoopPrecompile", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
+git-tree-sha1 = "aa51303df86f8626a962fccb878430cdb0a97eee"
+uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+version = "1.5.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -854,9 +630,9 @@ version = "0.1.4"
 
 [[deps.GPUCompiler]]
 deps = ["ExprTools", "InteractiveUtils", "LLVM", "Libdl", "Logging", "Scratch", "TimerOutputs", "UUIDs"]
-git-tree-sha1 = "237360a9f4c26f61d2151c65c34f887810c7bd7b"
+git-tree-sha1 = "24e605f328bdb086c61716bb79383cdf7b6e4f59"
 uuid = "61eb1bfa-7361-4325-ad38-22787b887f55"
-version = "0.19.1"
+version = "0.19.2"
 
 [[deps.GeoInterface]]
 deps = ["Extents"]
@@ -979,11 +755,17 @@ git-tree-sha1 = "5cd07aab533df5170988219191dfad0519391428"
 uuid = "d25df0c9-e2be-5dd7-82c8-3ad0b3e990b9"
 version = "0.1.3"
 
+[[deps.InlineStrings]]
+deps = ["Parsers"]
+git-tree-sha1 = "9cc2baf75c6d09f9da536ddf58eb2f29dedaf461"
+uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
+version = "1.4.0"
+
 [[deps.IntelOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "d979e54b71da82f3a65b62553da4fc3d18c9004c"
+git-tree-sha1 = "0cb9352ef2e01574eeebdb102948a58740dcaf83"
 uuid = "1d5cc7b8-4909-519e-a0f8-d0f5ad9712d0"
-version = "2018.0.3+2"
+version = "2023.1.0+0"
 
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
@@ -1007,6 +789,11 @@ git-tree-sha1 = "49510dfcb407e572524ba94aeae2fced1f3feb0f"
 uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
 version = "0.1.8"
 
+[[deps.InvertedIndices]]
+git-tree-sha1 = "0dc7b50b8d436461be01300fd8cd45aa0274b038"
+uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
+version = "1.3.0"
+
 [[deps.IrrationalConstants]]
 git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
@@ -1027,6 +814,12 @@ version = "1.4.0"
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
+
+[[deps.JLD2]]
+deps = ["FileIO", "MacroTools", "Mmap", "OrderedCollections", "Pkg", "Printf", "Reexport", "Requires", "TranscodingStreams", "UUIDs"]
+git-tree-sha1 = "42c17b18ced77ff0be65957a591d34f4ed57c631"
+uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+version = "0.4.31"
 
 [[deps.JLLWrappers]]
 deps = ["Preferences"]
@@ -1284,10 +1077,10 @@ uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2022.2.1"
 
 [[deps.NNlib]]
-deps = ["Adapt", "ChainRulesCore", "LinearAlgebra", "Pkg", "Random", "Requires", "Statistics"]
-git-tree-sha1 = "33ad5a19dc6730d592d8ce91c14354d758e53b0e"
+deps = ["Adapt", "Atomix", "ChainRulesCore", "GPUArraysCore", "KernelAbstractions", "LinearAlgebra", "Pkg", "Random", "Requires", "Statistics"]
+git-tree-sha1 = "99e6dbb50d8a96702dc60954569e9fe7291cc55d"
 uuid = "872c559c-99b0-510c-b3b7-b6c96a88d5cd"
-version = "0.8.19"
+version = "0.8.20"
 
 [[deps.NNlibCUDA]]
 deps = ["Adapt", "CUDA", "LinearAlgebra", "NNlib", "Random", "Statistics", "cuDNN"]
@@ -1460,6 +1253,12 @@ git-tree-sha1 = "47e5f437cc0e7ef2ce8406ce1e7e24d44915f88d"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
 version = "1.3.0"
 
+[[deps.PrettyTables]]
+deps = ["Crayons", "Formatting", "LaTeXStrings", "Markdown", "Reexport", "StringManipulation", "Tables"]
+git-tree-sha1 = "548793c7859e28ef026dba514752275ee871169f"
+uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
+version = "2.2.3"
+
 [[deps.Printf]]
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
@@ -1562,9 +1361,9 @@ version = "1.3.0"
 
 [[deps.ReverseDiff]]
 deps = ["ChainRulesCore", "DiffResults", "DiffRules", "ForwardDiff", "FunctionWrappers", "LinearAlgebra", "LogExpFunctions", "MacroTools", "NaNMath", "Random", "SpecialFunctions", "StaticArrays", "Statistics"]
-git-tree-sha1 = "afc870db2b2c2df1ba3f7b199278bb071e4f6f90"
+git-tree-sha1 = "a8d90f5bf4880df810a13269eb5e3e29f22cbd96"
 uuid = "37e2e3b7-166d-5795-8a7a-e32c996b4267"
-version = "1.14.4"
+version = "1.14.5"
 
 [[deps.Rmath]]
 deps = ["Random", "Rmath_jll"]
@@ -1617,6 +1416,12 @@ deps = ["Dates"]
 git-tree-sha1 = "30449ee12237627992a99d5e30ae63e4d78cd24a"
 uuid = "6c6a2e73-6563-6170-7368-637461726353"
 version = "1.2.0"
+
+[[deps.SentinelArrays]]
+deps = ["Dates", "Random"]
+git-tree-sha1 = "77d3c4726515dca71f6d80fbb5e251088defe305"
+uuid = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
+version = "1.3.18"
 
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
@@ -1711,9 +1516,9 @@ version = "1.3.0"
 
 [[deps.StaticArrays]]
 deps = ["LinearAlgebra", "Random", "StaticArraysCore", "Statistics"]
-git-tree-sha1 = "70e0cc0c0f9ef7ea76b3d7a50ada18c8c52e69a2"
+git-tree-sha1 = "63e84b7fdf5021026d0f17f76af7c57772313d99"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
-version = "1.5.20"
+version = "1.5.21"
 
 [[deps.StaticArraysCore]]
 git-tree-sha1 = "6b7ba252635a5eff6a0b0664a41ee140a1c9e72a"
@@ -1747,6 +1552,11 @@ deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Printf", "REPL", "Shifted
 git-tree-sha1 = "51cdf1afd9d78552e7a08536930d7abc3b288a5c"
 uuid = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
 version = "0.7.1"
+
+[[deps.StringManipulation]]
+git-tree-sha1 = "46da2434b41f41ac3594ee9816ce5541c6096123"
+uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
+version = "0.3.0"
 
 [[deps.StructArrays]]
 deps = ["Adapt", "DataAPI", "GPUArraysCore", "StaticArraysCore", "Tables"]
@@ -2025,24 +1835,30 @@ version = "3.5.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─bc2ef388-dbc3-11ed-01de-7338ef66e404
-# ╟─df637a8a-51fa-476b-9197-2cacf460f275
-# ╟─2f4e957b-e2d9-4681-b77b-3dd8e2ed46ad
-# ╠═d80c3da6-f1b1-42ca-99bd-4c63e2915e42
-# ╟─6e8e2c18-b266-458c-bf15-29651d4f1340
-# ╠═28404128-32ca-4b39-8a44-93080d854ea3
-# ╠═38350d77-b354-430d-9b3c-40ba549b0a47
-# ╟─283cf744-77ae-49da-8ee1-12fae3c18ab8
-# ╠═be1b09e4-4b8c-4bd8-a235-67155158d707
-# ╟─4295f6c3-b904-428f-bbac-d55a985e9342
-# ╟─1cfe9691-8e8c-4202-95fd-b10de3c234f5
-# ╠═94e249ec-c1b2-414f-bdd4-c57188476676
-# ╠═d0a0de5b-3968-4d94-bc34-5759da7b867f
-# ╟─33d8fc07-77a6-40ba-80d2-2183730cfe78
-# ╟─3f629129-700d-44eb-912d-99bd0c1b2423
-# ╠═98beb74b-740f-4e0b-9e13-d7c62fb5af18
-# ╠═ca4509f6-9252-40f7-812e-bac12fbd5b3d
-# ╠═fa915f64-f4f2-44c0-9a12-4029dc157e74
-# ╟─86e196ed-04d8-4fee-97cd-435290249d93
+# ╟─65062f72-de4d-11ed-2b69-d3a0377c9145
+# ╟─e01415e6-0a4d-460e-b885-31f776b09754
+# ╟─f4659fd9-96dc-4b64-8449-495feb896777
+# ╠═e100cb5e-a7fa-4874-8448-2d5a7ee89dfb
+# ╠═a0389136-7395-4a4a-96de-85f15aaa756e
+# ╠═17323c55-c1db-4c03-99a6-f56662551131
+# ╟─597c7dcf-6006-49a3-ac12-8dc6c020dc7a
+# ╠═dfb495b4-a201-4424-b0b3-0195bb32ed41
+# ╠═3dee0c6b-f81d-475e-9979-74861823b25a
+# ╠═2610ea73-946b-4621-8ead-6af64af2324c
+# ╠═ef265260-b82c-4a6d-b36f-4db11563f124
+# ╠═f3b75b68-a295-440a-8db5-d3c6309eb601
+# ╟─8c0c5dbd-2fe4-487f-b0b9-2500d7a1d2b7
+# ╠═abea167d-2b9a-4008-a06c-9cd3aed7a529
+# ╠═d1cd39bb-c6a4-43fe-962f-ec395c7eb556
+# ╟─fbeffd13-ce82-4001-bf10-e4f327de9a42
+# ╠═615d1627-fd53-462a-841b-ff4f392f605c
+# ╟─74e11d3b-89ec-44b1-aa87-08292fbec7ba
+# ╠═3bc4900c-0398-472b-9ed9-54d079af8445
+# ╟─d84d47e5-a9df-4430-871a-e937b85790b7
+# ╟─40017385-caec-4f02-adb8-1a7d144d3805
+# ╟─89207086-22f9-4dfa-bdf7-f125ce580819
+# ╟─0075e9c0-0337-45f2-b80d-72c8b5cd0932
+# ╟─1e187d18-9bf9-4447-b66e-0a121c992014
+# ╟─31db4afe-9e48-49d0-9980-228967e155e3
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -15,9 +15,9 @@ function create_data(
     outputs = zeros(Float32, 1, length(t), length(freqs))
 
     for i in 1:length(freqs)
-        freq = freqs[i]
+        freq = (freqs[i] - 0.10f0) / 0.50f0 + 0.25f0
         inputs[1,:,i] = fill(freq, length(t))
-        outputs[1,:,i] = sin.(Float32(2π)*freq*t)
+        outputs[1,:,i] = sin.(Float32(2π)*freqs[i]*t)
     end
     return inputs, outputs
 end
