@@ -121,28 +121,28 @@ function create_training_model(
 		Recurrence(
 			RNNCell(
 				1 => hidden_neurons, tanh; 
-				use_bias=false,
+				use_bias=true,
 				train_state=false,
 				init_weight=recurrent_init
 			); 
 			return_sequence = true
 		),
 		why_god,
-		Dense(hidden_neurons, 1; init_weight=output_init, use_bias=false)
+		Dense(hidden_neurons, 1; init_weight=output_init, use_bias=true)
 	)
     else
         model = Chain(
             Recurrence(
                 RNNCell(
                     1 => hidden_neurons, identity; 
-                    use_bias=false,
+                    use_bias=true,
                     train_state=false,
                     init_weight=recurrent_init
                 ); 
                 return_sequence = true
             ),
             why_god,
-            Dense(hidden_neurons, 1; init_weight=output_init, use_bias=false)
+            Dense(hidden_neurons, 1; init_weight=output_init, use_bias=true)
         )
     end
 	
@@ -163,26 +163,26 @@ function create_testing_model(
 		Recurrence(
 			RNNCell(
 				1 => hidden_neurons, tanh; 
-				use_bias=false,
+				use_bias=true,
 				train_state=false,
 			); 
 			return_sequence = true
 		),
 		x -> permutedims(cat(x..., dims=3), (1, 3, 2)),
-		Dense(hidden_neurons, 1; use_bias=false)
+		Dense(hidden_neurons, 1; use_bias=true)
 	)
     else
         model = Chain(
             Recurrence(
                 RNNCell(
                     1 => hidden_neurons, identity; 
-                    use_bias=false,
+                    use_bias=true,
                     train_state=false,
                 ); 
                 return_sequence = true
             ),
             x -> permutedims(cat(x..., dims=3), (1, 3, 2)),
-            Dense(hidden_neurons, 1; use_bias=false)
+            Dense(hidden_neurons, 1; use_bias=true)
         )
     end
 

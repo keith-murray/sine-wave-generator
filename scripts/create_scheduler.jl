@@ -28,36 +28,86 @@ md"### Create DataFrame"
 begin
 	run1 = [
 		0,
-		10000,
+		5000,
+		1024,
+		64,
 		0.001f0,
 		5,
 		0.50f0,
 		0.50f0,
 		"identity",
-		[0.6f0],
-		10.0f0,
-		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,],
-		20.0f0,
-		0.0f0,
+		[0.4f0, 0.6f0],
+		[0.00f0, 10.0f0],
+		[0.1f0, 0.6f0],
+		[0.00f0, 20.0f0],
 		0.10f0
 	]
-	rows = [run1, ]
+	run2 = [
+		0,
+		5000,
+		1024,
+		64,
+		0.001f0,
+		5,
+		0.50f0,
+		0.50f0,
+		"tanh",
+		[0.4f0, 0.6f0],
+		[0.00f0, 10.0f0],
+		[0.1f0, 0.6f0],
+		[0.00f0, 20.0f0],
+		0.10f0
+	]
+	run3 = [
+		0,
+		5000,
+		5,
+		1,
+		0.0002f0,
+		5,
+		0.75f0,
+		0.75f0,
+		"tanh",
+		[0.4f0, 0.6f0],
+		[0.00f0, 100.0f0],
+		[0.1f0, 0.6f0],
+		[0.00f0, 200.0f0],
+		1.00f0
+	]
+	run4 = [
+		0,
+		5000,
+		1,
+		1,
+		0.0002f0,
+		5,
+		0.75f0,
+		0.75f0,
+		"tanh",
+		[0.6f0, 0.6f0],
+		[0.00f0, 100.0f0],
+		[0.1f0, 0.6f0],
+		[0.00f0, 200.0f0],
+		1.00f0
+	]
+	rows = [run1, run2, run3, run4, ]
 end
 
 # ╔═╡ 918b5d12-14dd-4852-a4e2-f92569bc03fe
 column_names = [
 	"seed",
 	"epochs", 
+	"data_size",
+	"batch",
 	"lr", 
 	"neurons", 
 	"recur_gain", 
 	"out_gain", 
 	"activation",
 	"train_freq", 
-	"train_t_stop", 
+	"train_t", 
 	"test_freq", 
-	"test_t_stop", 
-	"t_start",
+	"test_t", 
 	"dt", 
 ]
 
@@ -98,47 +148,65 @@ md"## Create rescheduler"
 begin
 	rerun1 = [
 		0,
-		50000,
-		0.001f0,
+		5000,
+		3,
+		1,
+		0.0002f0,
 		5,
-		"identity",
-		[0.5f0,0.6f0],
-		10.0f0,
-		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,],
-		20.0f0,
-		0.0f0,
-		0.10f0,
-		"./data/models/model_1.jls"
+		"tanh",
+		[0.4f0, 0.6f0],
+		[0.00f0, 100.0f0],
+		[0.1f0, 0.6f0],
+		[0.00f0, 200.0f0],
+		1.00f0,
+		"./data/models/model_4.jls"
 	]
 	rerun2 = [
 		0,
-		50000,
-		0.0001f0,
+		5000,
+		2,
+		1,
+		0.001f0,
 		5,
-		"identity",
-		[0.5f0,0.55f0,0.6f0],
-		10.0f0,
-		[0.1f0,0.2f0,0.3f0,0.4f0,0.5f0,0.6f0,],
-		20.0f0,
-		0.0f0,
-		0.10f0,
-		"./data/models/model_1.jls"
+		"tanh",
+		[0.5f0, 0.6f0],
+		[0.00f0, 100.0f0],
+		[0.1f0, 0.6f0],
+		[0.00f0, 200.0f0],
+		1.00f0,
+		"./data/models/model_4.jls"
 	]
-	rerows = [rerun1, rerun2, ]
+	rerun3 = [
+		1,
+		10000,
+		2,
+		1,
+		0.001f0,
+		5,
+		"tanh",
+		[0.5f0, 0.6f0],
+		[0.00f0, 100.0f0],
+		[0.1f0, 0.6f0],
+		[0.00f0, 200.0f0],
+		1.00f0,
+		"./data/models/model_4.jls"
+	]
+	rerows = [rerun1, rerun2, rerun3, ]
 end
 
 # ╔═╡ f341199f-b90d-4b17-b3fa-8f04b236c27a
 recolumn_names = [
 	"seed",
 	"epochs", 
+	"data_size",
+	"batch",
 	"lr", 
 	"neurons", 
 	"activation",
 	"train_freq", 
-	"train_t_stop", 
+	"train_t", 
 	"test_freq", 
-	"test_t_stop", 
-	"t_start",
+	"test_t", 
 	"dt", 
 	"ps_loc",
 ]

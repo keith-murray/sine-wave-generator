@@ -35,7 +35,7 @@ end
 md"## Load model"
 
 # ╔═╡ dfb495b4-a201-4424-b0b3-0195bb32ed41
-ps, losses = loadModel("../data/models/remodel_2.jls")
+ps, losses = loadModel("../data/models/model_1.jls")
 
 # ╔═╡ 3dee0c6b-f81d-475e-9979-74861823b25a
 ps.layer_1.weight_ih
