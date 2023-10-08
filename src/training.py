@@ -1,22 +1,70 @@
 import torch
 import torch.nn as nn
+from torch.utils.data import DataLoader
+from src.task import PatternDataset
 
-def train_epoch(model, loss_function, train_loader, optimizer, device):
+def train_epoch(model, loss_function, train_loader, optimizer):
     model.train()
     for data in train_loader:
-        inputs, labels = data[0].to(device), data[1].to(device)
+        inputs, labels = data[0], data[1]
         outputs, _ = model(inputs, model.init_hidden(batch_size))
         loss = loss_function(outputs, labels)
         optimizer.zero_grad()
         loss.backward(retain_graph=True)
         optimizer.step()
 
-def test_epoch(model, loss_function, test_loader, device):
+def test_epoch(model, loss_function, test_loader):
     model.eval()
     losses = []
     for data in test_loader:
-        inputs, labels = data[0].to(device), data[1].to(device)
+        inputs, labels = data[0], data[1]
         outputs, _ = model(inputs, model.init_hidden(batch_size))
         loss = loss_function(outputs, labels)
         losses.append(loss.item())
     return sum(losses)/len(losses)
+
+def train_model(model, loss_function, train_loader, test_loader, optimizer, epochs):
+    train_losses = []
+    test_losses = []
+
+    for epoch in range(epochs):
+        train_epoch(model, loss_function, train_loader, optimizer)
+        avg_train_loss = test_epoch(model, loss_function, train_loader)
+        avg_test_loss = test_epoch(model, loss_function, test_loader)
+
+        train_losses.append(avg_train_loss)
+        test_losses.append(avg_test_loss)
+
+    return train_losses, test_losses
+
+def curriculum_train_model(model, freqs, time, epochs):
+    optimizer = torch.optim.Adam(model.parameters())
+    loss_function = nn.MSELoss()
+
+    test_data = PatternDataset(freqs, time)
+    test_loader = DataLoader(test_data, batch_size=1, shuffle=True)
+    
+    all_train_losses = []
+    all_test_losses = []
+
+    for i in range(len(freqs)):
+        print(f"Training with frequencies up to: {freqs[:i+1]}")
+        
+        # Adjust the training dataset to include more frequencies
+        train_data = PatternDataset(freqs[:i+1], time)
+        train_loader = DataLoader(train_data, batch_size=1, shuffle=True)
+
+        # Train the model
+        train_losses, test_losses = train_model(
+            model, 
+            loss_function, 
+            train_loader, 
+            test_loader, 
+            optimizer, 
+            epochs
+        )
+        
+        all_train_losses.extend(train_losses)
+        all_test_losses.extend(test_losses)
+
+    return all_train_losses, all_test_losses

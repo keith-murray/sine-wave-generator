@@ -2,12 +2,11 @@ import torch
 import torch.nn as nn
 
 class VanillaRNN(nn.Module):
-    def __init__(self, in_size, out_size, hidden_d, device,):
+    def __init__(self, in_size, out_size, hidden_d,):
         super(VanillaRNN, self).__init__()
         self.in_size = in_size
         self.out_size = out_size
         self.hidden_d = hidden_d
-        self.device = device
         
         self.rnn = nn.RNN(
             self.in_size, 
@@ -16,13 +15,13 @@ class VanillaRNN(nn.Module):
             nonlinearity='tanh', 
             batch_first = True, 
             bias=False
-        ).to(device)
+        )
         
         self.out_layer = nn.Linear(
             self.hidden_d, 
             self.out_size, 
             bias=False
-        ).to(device)
+        )
     
     def forward(self, x, hidden):
         rnn_out, hidden = self.rnn(x, hidden)
@@ -31,4 +30,4 @@ class VanillaRNN(nn.Module):
         return out, rnn_out
 
     def init_hidden(self, batch_size):
-        return torch.ones(1, batch_size, self.hidden_d).to(self.device)
+        return torch.ones(1, batch_size, self.hidden_d)
