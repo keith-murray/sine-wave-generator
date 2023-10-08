@@ -23,9 +23,10 @@ def test_epoch(model, loss_function, test_loader):
         losses.append(loss.item())
     return sum(losses)/len(losses)
 
-def train_model(model, loss_function, train_loader, test_loader, optimizer, epochs):
+def train_model(model, loss_function, train_loader, test_loader, optimizer, epochs, save_dir):
     train_losses = []
     test_losses = []
+    best_test_loss = float('inf') # Initialize with a large number
 
     for epoch in range(epochs):
         train_epoch(model, loss_function, train_loader, optimizer)
@@ -35,9 +36,15 @@ def train_model(model, loss_function, train_loader, test_loader, optimizer, epoc
         train_losses.append(avg_train_loss)
         test_losses.append(avg_test_loss)
 
+        # Save model if it has the lowest test loss so far
+        if avg_test_loss < best_test_loss:
+            best_test_loss = avg_test_loss
+            save_path = os.path.join(save_dir, f'best_model_freqs_{len(train_loader.dataset)}.pth')
+            torch.save(model.state_dict(), save_path)
+
     return train_losses, test_losses
 
-def curriculum_train_model(model, freqs, time, epochs):
+def curriculum_train_model(model, freqs, time, epochs, save_dir):
     optimizer = torch.optim.Adam(model.parameters())
     loss_function = nn.MSELoss()
 
@@ -61,7 +68,8 @@ def curriculum_train_model(model, freqs, time, epochs):
             train_loader, 
             test_loader, 
             optimizer, 
-            epochs
+            epochs,
+            save_dir
         )
         
         all_train_losses.extend(train_losses)

@@ -6,6 +6,7 @@ import numpy as np
 
 from src.model import VanillaRNN
 from src.training import curriculum_train_model
+from src.analysis import plot_analyses
 
 def set_seed(seed):
     """Set seed for reproducibility."""
@@ -21,26 +22,28 @@ if len(sys.argv) < 2:
     print("Usage: python train.py <path_to_params.json>")
     sys.exit(1)
 
-# Read in the JSON parameters
-json_path = sys.argv[1]
+task_id = sys.argv[1] # Here is the $LLSUB_RANK slurm argument
+experiment_folder = sys.argv[2] # Here is a non-slurm argument, this folder is the same across the entire job
+task_folder = os.path.join(experiment_folder, f"task_{task_id}")
+
+json_path = os.path.join(task_folder, "params.json")
 with open(json_path, 'r') as f:
-    params = json.load(f)
+    json_params = json.load(f)
 
 # Extract the parameters
-epochs = params.get("epochs")
-freqs = params.get("freqs")
-time = params.get("time")
-seed = params.get("seed", None)
+epochs = params.get("epochs", 25000)
+freqs = params.get("freqs", [0.6,0.5,0.4,0.3,0.2,0.1])
+time = params.get("time", 100)
+seed = params.get("seed", 0)
 
 # Set the seed for reproducibility
-if seed is not None:
-    set_seed(seed)
+set_seed(seed)
 
 # Initialize model
 model = VanillaRNN(1, 1, 5)
 
 # Train model
-train_losses, test_losses = curriculum_train_model(model, freqs, time, epochs)
+train_losses, test_losses = curriculum_train_model(model, freqs, time, epochs, task_folder)
 
 # Save the results and model parameters
 results = {
@@ -48,16 +51,10 @@ results = {
     "test_losses": test_losses
 }
 
-# Create a directory to save results if it doesn't exist
-output_dir = "output"
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-
 # Save results
-with open(os.path.join(output_dir, "results.json"), "w") as f:
+with open(os.path.join(task_folder, "results.json"), "w") as f:
     json.dump(results, f)
-
-# Save model parameters
-torch.save(model.state_dict(), os.path.join(output_dir, "model_params.pth"))
+    
+plot_analyses(task_folder, model)
 
 print("Training complete. Results and model parameters saved.")
