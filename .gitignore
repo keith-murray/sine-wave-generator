@@ -86,7 +86,6 @@ ipython_config.py
 .DS_Store
 
 # Supercloud files
-results/
 LLSUB.*/
 
 # pyenv
