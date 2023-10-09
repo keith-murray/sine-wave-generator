@@ -4,9 +4,9 @@ import sys
 import torch
 import numpy as np
 
-from src.model import VanillaRNN
-from src.training import curriculum_train_model
-from src.analysis import plot_analyses
+from sinusoid.model import VanillaRNN
+from sinusoid.training import curriculum_train_model
+from sinusoid.analysis import plot_analyses
 
 def set_seed(seed):
     """Set seed for reproducibility."""
@@ -31,10 +31,10 @@ with open(json_path, 'r') as f:
     json_params = json.load(f)
 
 # Extract the parameters
-epochs = params.get("epochs", 25000)
-freqs = params.get("freqs", [0.6,0.5,0.4,0.3,0.2,0.1])
-time = params.get("time", 100)
-seed = params.get("seed", 0)
+epochs = json_params.get("epochs", 25000)
+freqs = json_params.get("freqs", [0.6,0.5,0.4,0.3,0.2,0.1])
+time = json_params.get("time", 100)
+seed = json_params.get("seed", 0)
 
 # Set the seed for reproducibility
 set_seed(seed)

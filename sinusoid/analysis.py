@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from src.task import PatternDataset
+from sinusoid.task import PatternDataset
 
 def plot_loss(task_folder):
     # Load results from the task folder
@@ -142,10 +142,10 @@ def pca_plot(task_folder, model):
     ax = fig.add_subplot(111, projection='3d')
     for i in range(len(frequencies)):
         ax.plot(
-            outputs_3d_pca[i, :, 0], 
-            outputs_3d_pca[i, :, 1], 
-            outputs_3d_pca[i, :, 2], c
-            olor=cmap(norm(frequencies[i]))
+            outputs_3d_pca[i, :, 0],
+            outputs_3d_pca[i, :, 1],
+            outputs_3d_pca[i, :, 2],
+            color=cmap(norm(frequencies[i]))
         )
     ax.set_xlabel('PCA dimension 1')
     ax.set_ylabel('PCA dimension 2')

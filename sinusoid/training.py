@@ -1,13 +1,13 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from src.task import PatternDataset
+from sinusoid.task import PatternDataset
 
 def train_epoch(model, loss_function, train_loader, optimizer):
     model.train()
     for data in train_loader:
         inputs, labels = data[0], data[1]
-        outputs, _ = model(inputs, model.init_hidden(batch_size))
+        outputs, _ = model(inputs, model.init_hidden(1))
         loss = loss_function(outputs, labels)
         optimizer.zero_grad()
         loss.backward(retain_graph=True)
@@ -18,7 +18,7 @@ def test_epoch(model, loss_function, test_loader):
     losses = []
     for data in test_loader:
         inputs, labels = data[0], data[1]
-        outputs, _ = model(inputs, model.init_hidden(batch_size))
+        outputs, _ = model(inputs, model.init_hidden(1))
         loss = loss_function(outputs, labels)
         losses.append(loss.item())
     return sum(losses)/len(losses)
