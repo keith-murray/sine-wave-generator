@@ -121,13 +121,13 @@ def pca_plot(task_folder, model):
     time = return_params_times(task_folder)
     dataset = PatternDataset(frequencies, time)
     dataloader = DataLoader(dataset, batch_size=len(frequencies))
+    assert len(list(dataloader)) == 1, "Length of dataset is not 1"
 
     # Get the RNN outputs for each example in the dataset
     with torch.no_grad():
-        for X, y in dataloader:
-            inputs = torch.torch.reshape(X, (len(frequencies), time, 1))
-            out = model.return_4_PCA(inputs, model.init_hidden(len(frequencies)))
-            outputs = out[0].numpy()
+        X, y = list(dataloader)[0]
+        _, outputs = model(inputs, model.init_hidden(len(frequencies)))
+        outputs = outputs.numpy()
 
     # Reshape the outputs and apply PCA
     outputs_3d = np.reshape(outputs, (len(frequencies), time, -1))
