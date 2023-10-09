@@ -30,7 +30,4 @@ class VanillaRNN(nn.Module):
         return out, rnn_out
 
     def init_hidden(self, batch_size):
-        if batch_size == 1:
-            return torch.ones(1, self.hidden_d)
-        else:
-            return torch.ones(1, batch_size, self.hidden_d)
+        return torch.ones(1, batch_size, self.hidden_d)

@@ -14,5 +14,6 @@ class PatternDataset(torch.utils.data.Dataset):
         omega = self.frequencies[index]
         new_index = 100*omega - 9
         X = 0.25*torch.ones(self.time) + new_index/51
+        X = torch.unsqueeze(X, dim=1)
         y = torch.unsqueeze(torch.sin(omega * self.time_series), dim=1)
         return X, y
