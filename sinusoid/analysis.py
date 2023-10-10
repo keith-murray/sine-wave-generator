@@ -126,7 +126,7 @@ def pca_plot(task_folder, model):
     # Get the RNN outputs for each example in the dataset
     with torch.no_grad():
         X, y = list(dataloader)[0]
-        _, outputs = model(inputs, model.init_hidden(len(frequencies)))
+        _, outputs = model(X, model.init_hidden(len(frequencies)))
         outputs = outputs.numpy()
 
     # Reshape the outputs and apply PCA
