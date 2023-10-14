@@ -31,3 +31,6 @@ class VanillaRNN(nn.Module):
 
     def init_hidden(self, batch_size):
         return torch.ones(1, batch_size, self.hidden_d)
+    
+    def init_random(self, batch_size):
+        return torch.rand(1, batch_size, self.hidden_d)
